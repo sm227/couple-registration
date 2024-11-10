@@ -72,16 +72,16 @@ const calculateDday = (date: string): number => {
   return Math.floor((today - start) / (1000 * 60 * 60 * 24));
 };
 
-const CertificateContent = ({ formData, coupleType, handleDownload }: { 
-  formData: FormData; 
+const CertificateContent = ({ formData, coupleType, handleDownload }: {
+  formData: FormData;
   coupleType: CoupleType;
   handleDownload: () => Promise<void>;
 }) => {
   const dday = calculateDday(formData.anniversaryDate);
-  
+
   return (
     <div className="relative p-4 sm:p-8 backdrop-blur-sm max-w-[100vw]">
-      <motion.div 
+      <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         className="text-center space-y-4 sm:space-y-6"
@@ -106,7 +106,7 @@ const CertificateContent = ({ formData, coupleType, handleDownload }: {
         </div>
 
         {/* 커플 타입 섹션 */}
-        <motion.div 
+        <motion.div
           whileHover={{ scale: 1.02 }}
           className="bg-white/70 rounded-lg p-3 sm:p-4 shadow-lg"
         >
@@ -122,7 +122,7 @@ const CertificateContent = ({ formData, coupleType, handleDownload }: {
             함께한 지 {dday}일째
           </h3>
           <div className="text-xs sm:text-sm text-gray-500 mt-1">
-            ≈ {Math.floor(dday/365)}년 {dday%365}일
+            ≈ {Math.floor(dday / 365)}년 {dday % 365}일
           </div>
         </div>
 
@@ -173,28 +173,26 @@ const handleShare = async (platform: 'instagram' | 'twitter') => {
   const certificateElement = document.getElementById('couple-certificate');
   if (!certificateElement) return;
 
-  try {
-    const canvas = await html2canvas(certificateElement);
-    const image = canvas.toDataURL('image/png');
-    
-    if (platform === 'instagram') {
-      // 모바일에서 인스타그램 스토리 공유
-      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        const blob = await (await fetch(image)).blob();
-        const filesArray = [new File([blob], 'couple.png', { type: 'image/png' })];
-        
-        if (navigator.share) {
-          await navigator.share({
-            files: filesArray,
-            title: '우리의 커플 등록증',
-            text: '#커플등록증 #커플챌린지'
-          });
-        }
+
+  const canvas = await html2canvas(certificateElement);
+  const image = canvas.toDataURL('image/png');
+
+  if (platform === 'instagram') {
+    // 모바일에서 인스타그램 스토리 공유
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      const blob = await (await fetch(image)).blob();
+      const filesArray = [new File([blob], 'couple.png', { type: 'image/png' })];
+
+      if (navigator.share) {
+        await navigator.share({
+          files: filesArray,
+          title: '우리의 커플 등록증',
+          text: '#커플등록증 #커플챌린지'
+        });
       }
     }
-  } catch (_) {
-    toast.error('공유하기에 실패했습니다.');
   }
+
 };
 
 const CoupleRegistration = () => {
@@ -211,9 +209,9 @@ const CoupleRegistration = () => {
     },
     anniversaryDate: '',
   });
-  
+
   const [isGenerated, setIsGenerated] = useState(false);
-  
+
   const handleInputChange = (partner: 'partner1' | 'partner2', field: keyof PartnerData, value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -223,32 +221,30 @@ const CoupleRegistration = () => {
       }
     }));
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsGenerated(true);
   };
-  
+
   const handleDownload = async () => {
     const certificateElement = document.getElementById('couple-certificate');
     if (!certificateElement) return;
 
-    try {
-      const canvas = await html2canvas(certificateElement, {
-        scale: 2, // 더 선명한 이미지를 위해 스케일 증가
-        backgroundColor: null,
-      });
-      
-      const image = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = image;
-      link.download = `${formData.partner1.name}_${formData.partner2.name}_커플등록증.png`;
-      link.click();
-      
-      toast.success('이미지가 저장되었습니다! 💕');
-    } catch (_) {
-      toast.error('이미지 저장에 실패했습니다.');
-    }
+
+    const canvas = await html2canvas(certificateElement, {
+      scale: 2, // 더 선명한 이미지를 위해 스케일 증가
+      backgroundColor: null,
+    });
+
+    const image = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = `${formData.partner1.name}_${formData.partner2.name}_커플등록증.png`;
+    link.click();
+
+    toast.success('이미지가 저장되었습니다! 💕');
+
   };
 
   return (
@@ -300,7 +296,7 @@ const CoupleRegistration = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">파트너 2</h3>
                     <div>
@@ -334,18 +330,18 @@ const CoupleRegistration = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="mt-6">
                   <Label htmlFor="anniversary">기념일</Label>
                   <Input
                     id="anniversary"
                     type="date"
                     value={formData.anniversaryDate}
-                    onChange={(e) => setFormData(prev => ({...prev, anniversaryDate: e.target.value}))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, anniversaryDate: e.target.value }))}
                     required
                   />
                 </div>
-                
+
                 <Button type="submit" className="w-full">
                   등록증 생성하기
                 </Button>
@@ -355,8 +351,8 @@ const CoupleRegistration = () => {
         ) : (
           <div className="relative">
             <div id="couple-certificate">
-              <CertificateContent 
-                formData={formData} 
+              <CertificateContent
+                formData={formData}
                 coupleType={getCoupleType(formData.anniversaryDate, [formData.partner1.name, formData.partner2.name])}
                 handleDownload={handleDownload}
               />
